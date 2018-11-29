@@ -13,7 +13,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_form.*
 import android.view.MenuItem
-
+import br.com.heiderlopes.calculaflex.utils.DatabaseUtil
 
 class FormActivity : AppCompatActivity() {
 
@@ -71,7 +71,7 @@ class FormActivity : AppCompatActivity() {
         }
     }
 
-    private fun logout(){
+    private fun logout() {
         mAuth.signOut()
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
@@ -99,10 +99,7 @@ class FormActivity : AppCompatActivity() {
     }
 
     private fun listenerFirebaseRealtime() {
-        val database = FirebaseDatabase.getInstance()
-        //Define para usar dados off-line
-        database.setPersistenceEnabled(true)
-        database
+        DatabaseUtil.getDatabase()
             .getReference(firebaseReferenceNode)
             .child(userId)
             .addValueEventListener(object : ValueEventListener {
@@ -114,8 +111,7 @@ class FormActivity : AppCompatActivity() {
                     etEthanolAverage.setText(carData?.ethanolAverage.toString())
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                }
+                override fun onCancelled(error: DatabaseError) {}
             })
     }
 }
