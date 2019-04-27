@@ -1,5 +1,6 @@
 package br.com.heiderlopes.calculaflex.utils
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class DatabaseUtil {
@@ -12,6 +13,14 @@ class DatabaseUtil {
 
         fun getDatabase(): FirebaseDatabase {
             return firebaseDatabase
+        }
+
+        fun saveToken(token: String?) {
+            if (FirebaseAuth.getInstance().currentUser != null) {
+                FirebaseDatabase.getInstance().getReference("UsersTokens")
+                    .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                    .setValue(token)
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ import android.widget.Toast
 import br.com.heiderlopes.calculaflex.extensions.format
 import kotlinx.android.synthetic.main.activity_result.*
 
-class ResultActivity : AppCompatActivity() {
+class ResultActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +28,7 @@ class ResultActivity : AppCompatActivity() {
     }
 
     private fun calculate() {
+
         val gasPrice = intent.extras.getDouble("GAS_PRICE", 0.0)
         val ethanolPrice = intent.extras.getDouble("ETHANOL_PRICE", 0.0)
         val gasAverage = intent.extras.getDouble("GAS_AVERAGE", 0.0)

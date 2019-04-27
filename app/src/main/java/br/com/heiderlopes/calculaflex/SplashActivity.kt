@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_splash.*
 import android.content.SharedPreferences
 
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
 
     private val TEMPO_AGUARDO_SPLASHSCREEN = 3500L
 

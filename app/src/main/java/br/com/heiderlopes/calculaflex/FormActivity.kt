@@ -13,9 +13,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_form.*
 import android.view.MenuItem
+import br.com.heiderlopes.calculaflex.utils.CalculaFlexTracker
 import br.com.heiderlopes.calculaflex.utils.DatabaseUtil
+import com.google.firebase.analytics.FirebaseAnalytics
 
-class FormActivity : AppCompatActivity() {
+
+class FormActivity : BaseActivity() {
 
     private lateinit var userId: String
 
@@ -45,8 +48,22 @@ class FormActivity : AppCompatActivity() {
             proximatela.putExtra("ETHANOL_PRICE", etEthanolPrice.text.toString().toDouble())
             proximatela.putExtra("GAS_AVERAGE", etGasAverage.text.toString().toDouble())
             proximatela.putExtra("ETHANOL_AVERAGE", etEthanolAverage.text.toString().toDouble())
+
+            sendDataToAnalytics()
+
             startActivity(proximatela)
         }
+    }
+
+    private fun sendDataToAnalytics() {
+        val bundle = Bundle()
+        bundle.putString("EVENT_NAME", "CALCULATION")
+        bundle.putDouble("GAS_PRICE", etGasPrice.text.toString().toDouble());
+        bundle.putDouble("ETHANOL_PRICE", etEthanolPrice.text.toString().toDouble());
+        bundle.putDouble("GAS_AVERAGE", etGasAverage.text.toString().toDouble());
+        bundle.putDouble("ETHANOL_AVERAGE", etEthanolAverage.text.toString().toDouble());
+
+        CalculaFlexTracker.trackEvent(this, bundle)
     }
 
     private val defaultClearValueText = "0.0"
@@ -64,6 +81,7 @@ class FormActivity : AppCompatActivity() {
                 return true
             }
             R.id.action_logout -> {
+                DatabaseUtil.saveToken("")
                 logout()
                 return true
             }
