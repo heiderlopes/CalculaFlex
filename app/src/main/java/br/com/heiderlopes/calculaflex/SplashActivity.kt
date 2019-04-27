@@ -8,7 +8,10 @@ import android.os.Handler
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.activity_splash.*
 import android.content.SharedPreferences
-
+import br.com.heiderlopes.calculaflex.utils.RemoteConfig
+import android.content.DialogInterface
+import android.net.Uri
+import android.support.v7.app.AlertDialog
 
 class SplashActivity : BaseActivity() {
 
@@ -18,6 +21,23 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+        RemoteConfig.remoteConfigFetch()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    RemoteConfig.getFirebaseRemoteConfig().activateFetched()
+                    val minVersionApp = RemoteConfig.getFirebaseRemoteConfig()
+                        .getLong("min_version_app")
+                        .toInt()
+                    if (minVersionApp <= BuildConfig.VERSION_CODE)
+                        continueApp()
+                    else
+                        showAlertMinVersion()
+                } else
+                    continueApp()
+            }
+    }
+
+    private fun continueApp() {
         val preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
         val isFirstOpen = preferences.getBoolean("open_first", true)
 
@@ -27,6 +47,33 @@ class SplashActivity : BaseActivity() {
             markAppAlreadyOpen(preferences)
             showSplash()
         }
+    }
+
+    private fun showAlertMinVersion() {
+        AlertDialog.Builder(this)
+            .setTitle("Ops")
+            .setMessage("Você esta utilizando uma versão muito antiga do aplicativo. Deseja atualizar?")
+
+            .setPositiveButton(android.R.string.yes) { dialog, which ->
+                var intent: Intent
+
+                try {
+                    intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+                    startActivity(intent)
+                } catch (e: android.content.ActivityNotFoundException) {
+                    intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                    )
+                    startActivity(intent)
+                }
+            }
+
+            .setNegativeButton("Não") { dialog, which ->
+                finish()
+            }
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
 
     private fun markAppAlreadyOpen(preferences: SharedPreferences) {
